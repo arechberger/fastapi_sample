@@ -1,3 +1,4 @@
+from enum import Enum
 from fastapi import FastAPI
 from pydantic import BaseModel
 
@@ -6,6 +7,12 @@ class Item(BaseModel):
     name: str
     price: float
     is_offer: bool = None
+
+
+class ModelName(str, Enum):
+    alexnet = "alexnet"
+    resnet = "resnet"
+    lenet = "lenet"
 
 
 app = FastAPI()
@@ -34,3 +41,12 @@ async def read_current_user():
 @app.get("/users/{user_id}")
 async def read_user(user_id: int):
     return {"user_id": user_id}
+
+
+@app.get("/model/{model_name}")
+async def read_model(model_name: ModelName):
+    if model_name == ModelName.alexnet:
+        return {"model_name": model_name, "message": "Deep learning ftw"}
+    if model_name == ModelName.resnet:
+        return {"model_name": model_name, "message": "Resnet wohoo"}
+    return {"model_name": model_name, "message": "some residuals please"}
