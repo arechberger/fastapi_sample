@@ -1,0 +1,6 @@
+# fastapi and related (from docs)
+fastapi
+uvicorn
+
+# dev
+pre-commit
