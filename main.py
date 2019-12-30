@@ -1,5 +1,5 @@
 from enum import Enum
-from fastapi import FastAPI
+from fastapi import FastAPI, Query
 from pydantic import BaseModel
 
 
@@ -24,8 +24,25 @@ async def read_root():
 
 
 @app.get("/items/{item_id}")
-async def read_item(item_id: int, q: str = None):
+async def read_item(item_id: int, q: str = Query(None, max_length=20, deprecated=True)):
     return {"item_id": item_id, "q": q}
+
+
+@app.get("/items/query_required/")
+async def read_item_query(
+    q: str = Query(
+        ...,
+        alias="query-alias",
+        max_length=10,
+        title="Required Query",
+        regex=r"^fix\d+$",
+        description="An example how to declare a required query using the ... syntax",
+    )
+):
+    results = {"items": [{"item_id": "Foo"}, {"item_id": "Bar"}]}
+    if q:
+        results.update({"q": q})
+    return results
 
 
 @app.put("/items/{item_id}")
