@@ -1,5 +1,5 @@
 from enum import Enum
-from fastapi import FastAPI, Query, Path
+from fastapi import FastAPI, Query, Path, Body
 from pydantic import BaseModel
 
 
@@ -7,6 +7,11 @@ class Item(BaseModel):
     name: str
     price: float
     is_offer: bool = None
+
+
+class User(BaseModel):
+    username: str
+    full_name: str
 
 
 class ModelName(str, Enum):
@@ -49,8 +54,15 @@ async def read_item_query(
 
 
 @app.put("/items/{item_id}")
-async def put_item(item_id: int, item: Item):
-    return {"item_name": item.name, "item_id": item_id}
+async def put_item(
+    item_id: int, item: Item, user: User = None, importance: int = Body(1, ge=1)
+):
+    results = {"item_id": item_id, "item_name": item.name}
+    if user:
+        results.update({"user": user})
+    if importance:
+        results.update(({"importance": importance}))
+    return results
 
 
 @app.post("/items/")
