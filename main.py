@@ -1,5 +1,5 @@
 from enum import Enum
-from fastapi import FastAPI, Query
+from fastapi import FastAPI, Query, Path
 from pydantic import BaseModel
 
 
@@ -24,7 +24,10 @@ async def read_root():
 
 
 @app.get("/items/{item_id}")
-async def read_item(item_id: int, q: str = Query(None, max_length=20, deprecated=True)):
+async def read_item(
+    item_id: int = Path(..., title="The ID of the item to get", ge=1, le=1000),
+    q: str = Query(None, max_length=20, deprecated=True),
+):
     return {"item_id": item_id, "q": q}
 
 
